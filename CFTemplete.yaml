@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  GrafanaApplication:
+    Type: AWS::ElasticBeanstalk::Application
+    Properties:
+      Description: AWS Elastic Beanstal Grafana Docker
+  GrafanaApplicationVersion:
+    Type: AWS::ElasticBeanstalk::ApplicationVersion
+    Properties:
+      ApplicationName:
+        Ref: GrafanaApplication
+      Description: AWS ElasticBeanstalk Grafana Docker
+      SourceBundle:
+        S3Bucket: pruebagrafana
+        S3Key: docker.zip
+  GrafanaConfigurationTemplate:
+    Type: AWS::ElasticBeanstalk::ConfigurationTemplate
+    Properties:
+      ApplicationName:
+        Ref: GrafanaApplication
+      Description: AWS ElasticBeanstalk Grafana Docker
+      SolutionStackName: "64bit Amazon Linux 2 v3.2.4 running Docker "
+  GrafanaEnvironment:
+    Type: AWS::ElasticBeanstalk::Environment
+    Properties:
+      OptionSettings:
+          - Namespace: aws:elasticbeanstalk:environment
+            OptionName: EnvironmentType
+            Value: SingleInstance
+          - Namespace: aws:autoscaling:launchconfiguration
+            OptionName: IamInstanceProfile
+            Value: aws-elasticbeanstalk-ec2-role
+          - Namespace: aws:elasticbeanstalk:environment
+            OptionName: ServiceRole 
+            Value: aws-elasticbeanstalk-service-role
+      ApplicationName:
+        Ref: GrafanaApplication
+      Description: AWS ElasticBeanstalk Grafana Docker
+      TemplateName:
+        Ref: GrafanaConfigurationTemplate
+      VersionLabel:
+        Ref: GrafanaApplicationVersion
